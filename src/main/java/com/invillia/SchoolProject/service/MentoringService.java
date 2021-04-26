@@ -1,6 +1,8 @@
 package com.invillia.SchoolProject.service;
 
 import com.invillia.SchoolProject.dto.request.MentoringDTO;
+import com.invillia.SchoolProject.exception.mentorWithMoreThan3StudentsException;
+import com.invillia.SchoolProject.exception.repeatedStudentException;
 import com.invillia.SchoolProject.mapper.MentoringMapper;
 import com.invillia.SchoolProject.model.Mentoring;
 import com.invillia.SchoolProject.repository.MentoringRepository;
@@ -30,7 +32,7 @@ public class MentoringService {
 
         //Verifica se aluno já tem uma mentoria
         if (mentoringRepository.existsById(mentoringDTO.getStudent_id())) {
-            return null;
+            throw new repeatedStudentException("Student already saved in mentoring!");
         }
 
         //Verifica se mentor tem mais de 3 mentorias
@@ -39,7 +41,7 @@ public class MentoringService {
                 .collect(Collectors.toList());
 
         if(mentorExistingMentoring.size() > 2) {
-            return null;
+            throw new mentorWithMoreThan3StudentsException("Mentor cannot have more than 3 students!");
         }
 
         mentoringDTO.setMentor(mentorService.findOne(mentoringDTO.getMentor_id()));
